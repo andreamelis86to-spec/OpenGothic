@@ -71,7 +71,7 @@ class CommandLine {
     bool                isRQuery     = true;
     bool                isMeshSh     = true;
 #endif
-    bool                isBindlessSh = true;
+    bool                isBindlessSh = false;
     bool                isVsm        = false;
     bool                isRtSm       = false;
     GiMethod            isGi         = GiMethod::None;
