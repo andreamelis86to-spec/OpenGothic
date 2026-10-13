@@ -149,6 +149,13 @@ jobs:
         run: |
           "$ANDROID_HOME/cmake/3.22.1/bin/cmake" --build build/android --target OpenGothic-apk
 
+      - name: Upload Android APK
+        uses: actions/upload-artifact@v6
+        with:
+          name: OpenGothic-Android-APK
+          path: build/android/OpenGothic-apk/build/outputs/apk/release/OpenGothic-apk-release.apk
+          if-no-files-found: error
+  
   windows:
     needs: setup
     runs-on: windows-latest
