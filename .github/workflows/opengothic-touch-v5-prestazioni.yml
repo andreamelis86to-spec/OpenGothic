@@ -509,6 +509,6 @@ jobs:
       - name: Upload test APK
         uses: actions/upload-artifact@v6
         with:
-         name: OpenGothic-Android-Touch-v5-prestazioni
+        name: OpenGothic-Android-Touch-v5-prestazioni
           path: build/android/OpenGothic-apk/build/outputs/apk/release/OpenGothic-apk-release.apk
           if-no-files-found: error
