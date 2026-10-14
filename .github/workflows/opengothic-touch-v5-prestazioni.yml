@@ -1,4 +1,4 @@
-name: OpenGothic Touch V5 (prestazioni)
+6name: OpenGothic Touch V5 (prestazioni)
 
 on:
   workflow_dispatch:
@@ -509,6 +509,6 @@ jobs:
       - name: Upload test APK
         uses: actions/upload-artifact@v6
         with:
-          name: OpenGothic-Android-Touch-v4-frecce-menu
+         name: OpenGothic-Android-Touch-v5-prestazioni
           path: build/android/OpenGothic-apk/build/outputs/apk/release/OpenGothic-apk-release.apk
           if-no-files-found: error
