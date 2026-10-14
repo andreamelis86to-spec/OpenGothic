@@ -1,4 +1,4 @@
-6name: OpenGothic Touch V5 (prestazioni)
+name: OpenGothic Touch V5 (prestazioni)
 
 on:
   workflow_dispatch:
