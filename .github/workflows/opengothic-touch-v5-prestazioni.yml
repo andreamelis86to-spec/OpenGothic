@@ -506,9 +506,10 @@ jobs:
         run: |
           "$ANDROID_HOME/cmake/3.22.1/bin/cmake" --build build/android --target OpenGothic-apk
 
+            
       - name: Upload test APK
         uses: actions/upload-artifact@v6
         with:
-        name: OpenGothic-Android-Touch-v5-prestazioni
+          name: OpenGothic-Android-Touch-v5-prestazioni
           path: build/android/OpenGothic-apk/build/outputs/apk/release/OpenGothic-apk-release.apk
           if-no-files-found: error
