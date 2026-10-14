@@ -127,7 +127,7 @@ void Renderer::setupSettings() {
       }
   }
 
-  settings.zVidBrightness     = Gothic::settingsGetF("VIDEO","zVidBrightness");
+  settings.zVidBrightness = 0.5f;
   settings.zVidContrast       = Gothic::settingsGetF("VIDEO","zVidContrast");
   settings.zVidGamma          = Gothic::settingsGetF("VIDEO","zVidGamma");
 
