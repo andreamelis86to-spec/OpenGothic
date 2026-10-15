@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-feature android:name="android.hardware.vulkan.level" android:version="0" android:required="true" />
     <uses-feature android:name="android.hardware.vulkan.version" android:version="0x00401000" android:required="true" />
-    <application android:label="OpenGothic" android:hasCode="false" android:allowBackup="false"
+    <application android:label="OpenGothic A25" android:hasCode="false" android:allowBackup="false"
         android:theme="@android:style/Theme.Material.NoActionBar.Fullscreen">
         <activity android:name="android.app.NativeActivity" android:exported="true"
             android:screenOrientation="landscape"

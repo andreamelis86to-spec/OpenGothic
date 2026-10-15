@@ -1,8 +1,8 @@
-name: OpenGothic A25 stability (full quality)
+name: OpenGothic A25 side-by-side (full quality)
 on:
   workflow_dispatch:
   push:
-    branches: [opengothic-v6-a25-stability]
+    branches: [opengothic-a25-side-by-side]
 
 permissions:
   contents: read
@@ -432,7 +432,7 @@ jobs:
       - name: Generate build version
         run: |
           echo '#pragma once' > game/build.h
-          echo 'static const char* appBuild = "OpenGothic A25 stability full quality";' >> game/build.h
+          echo 'static const char* appBuild = "OpenGothic A25 side-by-side full quality";' >> game/build.h
 
       - name: Configure
         run: |
@@ -443,24 +443,59 @@ jobs:
 
       - name: Verify Android identity and full quality
         run: |
-          grep -Fq 'PACKAGE_NAME org.opengothic.optimized.v6' CMakeLists.txt
+          grep -Fq 'PACKAGE_NAME org.opengothic.optimized.a25' CMakeLists.txt
+          grep -Fq 'android:label="OpenGothic A25"' android/AndroidManifest.xml
           grep -Fq 'const uint32_t shadowResolution   = 2048;' common/graphics/renderer.h
 
       - name: Build test APK
         run: |
           "$ANDROID_HOME/cmake/3.22.1/bin/cmake" --build build/android --target OpenGothic-apk
 
+      - name: Verify packaged identity, signature and native symbols
+        shell: bash
+        run: |
+          set -euo pipefail
+          apk=build/android/OpenGothic-apk/build/outputs/apk/release/OpenGothic-apk-release.apk
+          tools="$ANDROID_HOME/build-tools/35.0.0"
+          "$tools/aapt" dump badging "$apk" > build/android/apk-badging.txt
+          grep -Fq "package: name='org.opengothic.optimized.a25'" build/android/apk-badging.txt
+          grep -Fq "application-label:'OpenGothic A25'" build/android/apk-badging.txt
+          grep -Fq "native-code: 'arm64-v8a'" build/android/apk-badging.txt
+          "$tools/apksigner" verify --verbose --print-certs "$apk" > build/android/apk-signature.txt
+          mkdir -p build/android/a25-symbols/arm64-v8a
+          # Gradle builds inside .cxx, not the outer CMake output directory.
+          python3 - <<'PYSYMBOLS'
+          from pathlib import Path
+          import shutil
+          import subprocess
+          root = Path('build/android/OpenGothic-apk/.cxx/Release')
+          candidates = sorted(root.glob('*/arm64-v8a/opengothic/libGothic2Notr.so'))
+          if len(candidates) != 1:
+              raise RuntimeError(f'Expected one unstripped arm64 library, found {candidates}')
+          library = candidates[0]
+          sections = subprocess.check_output(['readelf', '-SW', str(library)], text=True)
+          if '.debug_line' not in sections or '.symtab' not in sections:
+              raise RuntimeError(f'Missing debug lines or symbol table: {library}')
+          shutil.copy2(library, 'build/android/a25-symbols/arm64-v8a/libGothic2Notr.so')
+          print(f'Collected verified native symbols from {library}')
+          PYSYMBOLS
+          {
+            echo "OpenGothic commit: $GITHUB_SHA"
+            echo "Tempest commit: $(git -C lib/Tempest rev-parse HEAD)"
+            sha256sum "$apk" build/android/a25-symbols/arm64-v8a/libGothic2Notr.so
+          } > build/android/a25-symbols/build-info.txt
+          cp build/android/apk-badging.txt build/android/apk-signature.txt build/android/a25-symbols/
 
       - name: Upload test APK
         uses: actions/upload-artifact@v6
         with:
-          name: OpenGothic-Android-A25-stability
+          name: OpenGothic-A25-side-by-side-APK
           path: build/android/OpenGothic-apk/build/outputs/apk/release/OpenGothic-apk-release.apk
           if-no-files-found: error
 
       - name: Upload native symbols for crash analysis
         uses: actions/upload-artifact@v6
         with:
-          name: OpenGothic-Android-A25-native-symbols
-          path: build/android/opengothic/libGothic2Notr.so
+          name: OpenGothic-A25-side-by-side-native-symbols
+          path: build/android/a25-symbols/
           if-no-files-found: error

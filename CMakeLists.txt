@@ -217,8 +217,10 @@ target_link_libraries(Spacer PRIVATE OpenGothic SpacerAssets)
 
 if(ANDROID)
   add_android_apk(OpenGothic-apk
-    PACKAGE_NAME org.opengothic.optimized.v6
+    PACKAGE_NAME org.opengothic.optimized.a25
     CODE Gothic2Notr
+    NATIVE_SYMBOLS FULL
+    CPP_FLAGS -g1 -fno-omit-frame-pointer
     MANIFEST android/AndroidManifest.xml)
 endif()
 
