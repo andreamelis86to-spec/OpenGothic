@@ -458,9 +458,14 @@ jobs:
           apk=build/android/OpenGothic-apk/build/outputs/apk/release/OpenGothic-apk-release.apk
           tools="$ANDROID_HOME/build-tools/35.0.0"
           "$tools/aapt" dump badging "$apk" > build/android/apk-badging.txt
+          cat build/android/apk-badging.txt
           grep -Fq "package: name='org.opengothic.optimized.a25'" build/android/apk-badging.txt
-          grep -Fq "application-label:'OpenGothic A25'" build/android/apk-badging.txt
-          grep -Fq "native-code: 'arm64-v8a'" build/android/apk-badging.txt
+          # Resource-free NativeActivity APKs need not list application-label
+          # or native-code in badging. Inspect the binary manifest and ZIP.
+          "$tools/aapt" dump xmltree "$apk" AndroidManifest.xml > build/android/apk-manifest.txt
+          grep -E 'android:label.*"OpenGothic A25"' build/android/apk-manifest.txt
+          unzip -Z1 "$apk" > build/android/apk-files.txt
+          grep -Fx 'lib/arm64-v8a/libGothic2Notr.so' build/android/apk-files.txt
           "$tools/apksigner" verify --verbose --print-certs "$apk" > build/android/apk-signature.txt
           mkdir -p build/android/a25-symbols/arm64-v8a
           # Gradle builds inside .cxx, not the outer CMake output directory.
@@ -484,7 +489,7 @@ jobs:
             echo "Tempest commit: $(git -C lib/Tempest rev-parse HEAD)"
             sha256sum "$apk" build/android/a25-symbols/arm64-v8a/libGothic2Notr.so
           } > build/android/a25-symbols/build-info.txt
-          cp build/android/apk-badging.txt build/android/apk-signature.txt build/android/a25-symbols/
+          cp build/android/apk-badging.txt build/android/apk-signature.txt build/android/apk-manifest.txt build/android/apk-files.txt build/android/a25-symbols/
 
       - name: Upload test APK
         uses: actions/upload-artifact@v6
