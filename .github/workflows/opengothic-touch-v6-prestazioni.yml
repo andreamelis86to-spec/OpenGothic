@@ -485,7 +485,7 @@ jobs:
       - name: Generate build version
         run: |
           echo '#pragma once' > game/build.h
-          echo 'static const char* appBuild = "OpenGothic touch v5 prestazioni";' >> game/build.h
+          echo 'static const char* appBuild = "OpenGothic touch v6 prestazioni";' >> game/build.h
 
       - name: Reduce shadow resolution for Android
         shell: bash
@@ -509,6 +509,6 @@ jobs:
       - name: Upload test APK
         uses: actions/upload-artifact@v6
         with:
-          name: OpenGothic-Android-Touch-v5-prestazioni
+          name: OpenGothic-Android-Touch-v6-prestazioni
           path: build/android/OpenGothic-apk/build/outputs/apk/release/OpenGothic-apk-release.apk
           if-no-files-found: error
