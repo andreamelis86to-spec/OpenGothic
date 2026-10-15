@@ -233,7 +233,7 @@ class Resources final {
     DmLoader*                         dmLoader = nullptr;
     zenkit::Vfs                       gothicAssets;
 
-    std::vector<uint8_t>              fBuff, ddsBuf;
+    std::vector<uint8_t>              fBuff;
     Tempest::IndexBuffer<uint16_t>    cube;
 
     struct DeleteQueue {

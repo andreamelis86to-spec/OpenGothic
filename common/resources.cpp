@@ -76,9 +76,6 @@ Resources::Resources(Tempest::Device &device)
   // switch-build
   dxMusic->addPath(Gothic::nestedPath({u"_work",u"Data",u"Music"},Dir::FT_Dir));
 
-  fBuff .reserve(8*1024*1024);
-  ddsBuf.reserve(8*1024*1024);
-
   {
   Pixmap pm(1,1,TextureFormat::RGBA8);
   uint8_t* pix = reinterpret_cast<uint8_t*>(pm.data());
@@ -853,24 +850,23 @@ std::vector<const Texture2d*> Resources::loadTextureAnim(std::string_view name) 
     return ret;
 
   for(int id=0; ; ++id) {
-    size_t at = 0;
-    char   buf[128]={};
+    std::string buf;
+    buf.reserve(name.size()+16);
     for(size_t i=0;i<name.size();++i) {
       if(i+2<name.size() && name[i]=='_' && (name[i+1]=='A' || name[i+1]=='a') && name[i+2]=='0'){
-        at += size_t(std::snprintf(buf+at,sizeof(buf)-at,"_A%d",id));
+        buf += "_A";
+        buf += std::to_string(id);
         i+=2;
         } else {
-        buf[at] = name[i];
-        if('a'<=buf[at] && buf[at]<='z')
-          buf[at] = char(buf[at]+'A'-'a');
-        at++;
+        char c = name[i];
+        if('a'<=c && c<='z')
+          c = char(c+'A'-'a');
+        buf += c;
         }
-      if(at>sizeof(buf))
-        return ret;
       }
-   auto t = loadTexture(buf);
+    auto t = loadTexture(buf);
     if(t==nullptr) {
-      string_frm buf2(buf,".TGA");
+      const std::string buf2 = buf + ".TGA";
       t = loadTexture(buf2);
       if(t==nullptr)
         return ret;

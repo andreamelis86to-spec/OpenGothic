@@ -84,7 +84,7 @@ class Workers final {
     static const size_t               taskPerStep;
     bool                              running=true;
 
-    std::thread                       th[MAX_THREADS];
+    std::vector<std::thread>           th;
 
     std::mutex                        sync;
     std::condition_variable           workWait;

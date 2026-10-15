@@ -324,8 +324,9 @@ void VisualObjects::free(size_t id) {
   clustersMem.free(obj.clusterId, numCluster);
   updateRtAs(id);
 
-  if(obj.wind==zenkit::AnimationType::NONE)
-    objectsWind.erase(id);
+  // Remove the id before resetting or shrinking objects. It may be reused by
+  // an unrelated object, or become out of bounds after pop_back().
+  objectsWind.erase(id);
   if(obj.type==DrawCommands::Morph)
     objectsMorph.erase(id);
 

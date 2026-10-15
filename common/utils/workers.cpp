@@ -72,6 +72,9 @@ const size_t Workers::taskPerThread = 128;
 const size_t Workers::taskPerStep   = 16;
 
 Workers::Workers() {
+  // Match the pool to the available CPUs instead of creating sixteen threads
+  // even on smaller devices. The calling thread also participates in for-loops.
+  th.resize(maxThreads());
   size_t id=0;
   for(auto& i:th) {
     i = std::thread([this,id]() noexcept {
@@ -84,7 +87,7 @@ Workers::Workers() {
 Workers::~Workers() {
   running  = false;
   workSet  = nullptr;
-  workSize = MAX_THREADS;
+  workSize = th.size();
   execWork(minWorkSize<void,void>());
   for(auto& i:th)
     i.join();
@@ -124,7 +127,7 @@ void Workers::threadFunc(size_t id) {
 
     if(workSet==nullptr) {
       auto idx = progressIt.fetch_add(1);
-      workFunc(workSet+idx, 1);
+      workFunc(reinterpret_cast<void*>(uintptr_t(idx)), 1);
       } else {
       taskLoop();
       }
